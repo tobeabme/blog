@@ -154,7 +154,7 @@ XMPP 消息传递与 HTTP 消息传递具有以下差异：
 
 #### Registration with FCM
 客户端应用必须首先向FCM注册，然后才能进行消息传递。客户端应用程序必须完成下图中显示的注册步骤：
-![02-server-fcm-app-sml.png](https://github.com/tobeabme/blog/blob/master/images/02-server-fcm-app-sml.png)
+![02-app-registration-sml.png](https://github.com/tobeabme/blog/blob/master/images/02-app-registration-sml.png)
 
 - 客户端应用程序联系FCM以获取注册令牌，将发件人ID，API密钥和App ID传递给FCM。 
 - FCM将注册令牌返回给客户端应用程序。 
