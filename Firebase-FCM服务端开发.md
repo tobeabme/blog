@@ -150,11 +150,11 @@ XMPP 消息传递与 HTTP 消息传递具有以下差异：
 
 #### Overview
 如下图所示，FCM充当消息发送者和客户端之间的中介。客户端应用程序是在设备上运行的启用FCM的应用程序。应用服务器（由您或您的公司提供）是客户端应用通过FCM与之通信的启用FCM的服务器。与GCM不同，FCM使您可以通过Firebase控制台通知GUI直接向客户端应用程序发送消息
-![01-server-fcm-app-sml.png](https://github.com/tobeabme/blog/blob/master/images/messagePushFlowChart.jpg)
+![01-server-fcm-app-sml.png](https://github.com/tobeabme/blog/blob/master/images/01-server-fcm-app-sml.png)
 
 #### Registration with FCM
 客户端应用必须首先向FCM注册，然后才能进行消息传递。客户端应用程序必须完成下图中显示的注册步骤：
-![02-server-fcm-app-sml.png](https://github.com/tobeabme/blog/blob/master/images/messagePushFlowChart.jpg)
+![02-server-fcm-app-sml.png](https://github.com/tobeabme/blog/blob/master/images/02-server-fcm-app-sml.png)
 
 - 客户端应用程序联系FCM以获取注册令牌，将发件人ID，API密钥和App ID传递给FCM。 
 - FCM将注册令牌返回给客户端应用程序。 
@@ -164,7 +164,7 @@ XMPP 消息传递与 HTTP 消息传递具有以下差异：
 
 #### Downstream messaging
 下图说明了Firebase Cloud Messaging如何存储和转发下游消息：
-![03-downstream-sml.png](https://github.com/tobeabme/blog/blob/master/images/messagePushFlowChart.jpg)
+![03-downstream-sml.png](https://github.com/tobeabme/blog/blob/master/images/03-downstream-sml.png)
 
 当应用服务器向客户端应用程序发送下游消息时，它将使用上图中枚举的以下步骤：
 - 应用服务器将消息发送到FCM。
@@ -175,7 +175,7 @@ XMPP 消息传递与 HTTP 消息传递具有以下差异：
 
 #### Topic messaging
 主题消息使应用服务器可以向已选择加入特定主题的多个设备发送消息。您还可以通过Firebase控制台通知GUI撰写和发送主题消息。 FCM处理主题消息到订阅客户端的路由和传递。此功能可用于天气警报，股票报价和标题新闻等消息。
-![04-topic-messaging-sml.png](https://github.com/tobeabme/blog/blob/master/images/messagePushFlowChart.jpg)
+![04-topic-messaging-sml.png](https://github.com/tobeabme/blog/blob/master/images/04-topic-messaging-sml.png)
 
 主题消息中使用以下步骤（在客户端应用程序获取注册令牌之后，如前所述）
 - 客户端应用程序通过向FCM发送订阅消息来订阅主题。
