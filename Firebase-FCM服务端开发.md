@@ -191,42 +191,48 @@ XMPP 消息传递与 HTTP 消息传递具有以下差异：
 - 用同一个账号，在多个设备上登录应用，会出现什么情况？在这种场景下你期望的正确策略又是什么？
 - 客户端向服务端注册Token时有漏洞吗？如何确保安全性？
 
-现假设有A，B 2个账号，如果A账号登录APP后发表了一篇文章，然后A从APP内退出了。假设有人收藏了该文章，那么A会收到通知吗？你期望A收到通知吗？如果这时候再切换B账号呢？
+现假设有A，B 2个账号，如果A账号登录APP后发表了一篇文章，然后A从APP内退出了。假设有人收藏了该文章，那么A会收到通知吗？你期望A收到通知吗？如果这时候再切换B账号呢？ 
 
-好了，这里面有太多种结果了，不做一一分析了，最主要的是想清楚你要的是什么？你期望的是什么？什么是正确且合理的？说下我期望的： 
+好了，这里面有太多种结果了，不做一一分析了，最主要的是想清楚你要的是什么？你期望的是什么？什么是正确且合理的？说下我期望的：  
 
-我期望当「A」从「APP内」退出时，不再收到与「A」账号有关的私有通知信息。但是像一些无关紧要的，通用型的，非隐私的消息可以接收，如：系统公告类的通知等。
+我期望当「A」从「APP内」退出时，不再收到与「A」账号有关的私有通知信息。但是像一些无关紧要的，通用型的，非隐私的消息可以接收，如：系统公告类的通知等。 
 
-如果要达到这个期望应该如何设计呢？期望值明确了，需求明确了就逐个分析呗。
+如果要达到这个期望应该如何设计呢？期望值明确了，需求明确了就逐个分析呗。 
 
-设备、注册Token、用户账号、状态，这些是关键元素。其中状态的值为：online和offline。
-online  指用户登录了APP，且APP在设备可用。
-offline 指用户退出了APP，且APP在设备可用。
+设备、注册Token、用户账号、状态，这些是关键元素。其中状态的值为：online和offline。 
+- online  指用户登录了APP，且APP在设备可用。
+- offline 指用户退出了APP，且APP在设备可用。
 
 ### 逻辑代码
 
 **登录** 
+
 「账号A」在登录后，向「APP服务端」注册Token。
 「服务端-注册Token接口」一个设备，只允许存在一条记录，因为一个设备只能同时登录一个账号。所以在注册时，把设备作为查询条件，如果存在，更新uid和Token，并设置状态为online；否则，插入用户ID、设备、Token，并设置状态为online，用户ID从Http Header中的LoginToken里解析出来，设备信息也从Http Header中获取。
 
 **走Topic发送消息，优点是同一个账号，多个设备登录的情况比较方便，缺点是退出后不能收到如何消息** 
+
 「服务端」创建Topic，以uid作为Topic名称。
 「服务端」订阅Topic，以uid对应的Tokens作为订阅者，订阅Topic。
 「服务端」发送消息到Topic，Topic名称为uid。
 「FCM」会把通知消息Push到Topic的订阅者。
 
 **走Token发送消息** 
+
 「服务端」根据账号，找到所有online状态的Tokens，发送消息到Tokens。
 
 **接收** 
+
 「客户端」收到通知消息，如果同一个账号多个设备的情况，那么每个设备都会收到通知。
 
 **退出** 
+
 「账号A」在退出时向「服务端」注销Token，退出前获取注册Token，然后向「服务端」发送注销Token请求。
 「服务端」根据账号和设备，修改Token状态为offline。
 「服务端」取消订阅Topic。
 
 **切换账号** 
+
 「账号B」退出A，登录B时，由于一个设备只允许允许一个账号，所以B会覆盖A的注册信息。
 
 
@@ -240,13 +246,17 @@ offline 指用户退出了APP，且APP在设备可用。
 
 ### 数据结构
 
-```
-notify_firebase
+FCM渠道表「notify_fcm」
+表结构如下：
 
-device
-token
-uid
-CreateAt
+```
+id: {type: 'integer', primaryKey: true, autoIncrement:true} 
+device: {type: 'string', required: true} //设备号，Agent;
+token: {type: 'string', required: true} //FCM生成的注册Token;
+userId: {type: 'string', required: true}，//用户ID;
+state: {type: 'integer', required: true} //状态，online|offline；
+createdAt: {type: 'timestamp', required: true} //创建时间;
+updateAt: {type: 'timestamp', required: true} //更新时间;
 ```
 
 ### Go实例
