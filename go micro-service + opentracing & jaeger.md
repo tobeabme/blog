@@ -28,17 +28,21 @@ The instrumentation has very little overhead, and is designed to be always enabl
 Note that while all traces are generated, only a few are sampled. Sampling a trace marks the trace for further processing and storage. By default, Jaeger client samples 0.1% of traces (1 in 1000), and has the ability to retrieve sampling strategies from the agent.
 
 **Agent** 
+
 The Jaeger agent is a network daemon that listens for spans sent over UDP, which it batches and sends to the collector. It is designed to be deployed to all hosts as an infrastructure component. The agent abstracts the routing and discovery of the collectors away from the client.
 
 **Collector** 
+
 The Jaeger collector receives traces from Jaeger agents and runs them through a processing pipeline. Currently our pipeline validates traces, indexes them, performs any transformations, and finally stores them.
 
 Jaeger’s storage is a pluggable component which currently supports Cassandra, Elasticsearch and Kafka.
 
 **Query** 
+
 Query is a service that retrieves traces from storage and hosts a UI to display them.
 
 **Ingester** 
+
 Ingester is a service that reads from Kafka topic and writes to another storage backend (Cassandra, Elasticsearch).
 
 ## 如何埋点
