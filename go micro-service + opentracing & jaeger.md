@@ -1,8 +1,7 @@
 
 ## 背景
 gin+grpc
-![MicroserviceFramework-3.png](https://github.com/tobeabme/blog/blob/master/images/MicroserviceFramework-3.png)
-![Microservice-3.png](https://github.com/tobeabme/blog/blob/master/images/Microservice-3.png)
+
 
 
 ## Opentracing
@@ -47,7 +46,18 @@ Ingester is a service that reads from Kafka topic and writes to another storage 
 
 ## 微服务框架接入opentracing流程
 
-一个微服务框架包括两个部分，http(gin)&grpc两部分，对外提供rest，对内提供grpc服务。下面是微服务框架接入opentracing的大概流程。
+一个微服务框架包括两个部分，http(gin) & grpc两部分，对外提供rest，对内提供grpc服务。
+
+下面是微服务通讯架构图
+
+![Microservice-3.png](https://github.com/tobeabme/blog/blob/master/images/Microservice-3.png)
+
+下面是微服务软件框架图
+
+![MicroserviceFramework-3.png](https://github.com/tobeabme/blog/blob/master/images/MicroserviceFramework-3.png)
+
+
+下面是微服务框架接入opentracing的大概流程。
 
 **为每个http请求创建一个tracer** 
 
