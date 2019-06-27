@@ -108,14 +108,22 @@ func Setting(c *gin.Context) {
 }
 ```
 
+### GRPC
+
 **RPC 函数埋点** 
 
 ```
 func (s *Service) Setting(ctx context.Context, req *passportpb.UserSettingRequest) (*passportpb.UserSettingReply, error) {
-	if !s.meta.IsGrpcRequest(ctx) {
-		span, _ := opentracing.StartSpanFromContext(ctx, "rpc.srv.Setting")
-		defer span.Finish()
-	}
-    
+    // 如果不是grpc调用，即本地rpc函数调用方式，则从上下文中提取span。
+    if !s.meta.IsGrpcRequest(ctx) {
+	span, _ := opentracing.StartSpanFromContext(ctx, "rpc.srv.Setting")
+	defer span.Finish()
+    }
+
+    // 如果在rpc函数中，存在请求其它grpc函数，则正常调用即可，因为在grpc的请求上下文中已经有了trace和span信息，直接繁殖就行，无需额外操作。
+    reqVerify := new(passportpb.VerifyRequest)
+    reqVerify.UID = req.UserID
+    cli, _ := passportpb.Dial(ctx)
+    replyV, _ := cli.Verify(ctx, reqVerify)
 }    
 ```
