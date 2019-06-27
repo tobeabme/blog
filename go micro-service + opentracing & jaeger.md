@@ -47,13 +47,13 @@ Ingester is a service that reads from Kafka topic and writes to another storage 
 
 ## 如何埋点
 
-#### Gin 框架 
+### Gin 框架 
 **router 埋点** 
 
 在每个需要追踪请求的http路由方法上，添加「tracing.NewSpan」函数。
 
 ```
-import ""code.qschou.com/peduli/go_common/tracing""
+import ".../go_common/tracing"
 
 ...
 
@@ -73,3 +73,49 @@ NewSpan(service string, operationName string, abortOnErrors bool, opts ...opentr
 service generally fill with the endpoint of api.
 operationName can be filled with HandleFunc's name.
 
+**Handler 函数埋点**
+
+```
+func Setting(c *gin.Context) {
+    ...
+    // 从gin context中获取span；必须埋点！
+    span, found := tracing.GetSpan(c)
+
+    //添加tag和log
+    if found == true && span != nil {
+        span.SetTag("req", req)
+        span.LogFields(
+            log.Object("uid", uid),
+        )
+    }
+
+    // opentracing.ContextWithSpan，将span和context绑定；在handler函数中，这个地方也是必须埋点的。
+    ctx, cancel := context.WithTimeout(opentracing.ContextWithSpan(context.Background(), span), time.Second*3)
+    defer cancel()
+
+    // call by grpc；这块不需要特殊处理
+    auth := passportpb.Authentication{
+        LoginToken: c.GetHeader("Qsc-Peduli-Token"),
+    }
+    cli, _ := passportpb.Dial(ctx, grpc.WithPerRPCCredentials(&auth))
+    reply, err := cli.Setting(ctx, req)
+
+    // directly call by local rpc method；这块不需要特殊处理
+    ctx = metadata.AppendToOutgoingContext(ctx, "logintoken", c.GetHeader("Qsc-Peduli-Token"))
+    reply, err := rpc.Srv.Setting(ctx, req)
+
+    ...
+}
+```
+
+**RPC 函数埋点** 
+
+```
+func (s *Service) Setting(ctx context.Context, req *passportpb.UserSettingRequest) (*passportpb.UserSettingReply, error) {
+	if !s.meta.IsGrpcRequest(ctx) {
+		span, _ := opentracing.StartSpanFromContext(ctx, "rpc.srv.Setting")
+		defer span.Finish()
+	}
+    
+}    
+```
