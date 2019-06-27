@@ -176,3 +176,7 @@ func (s *Service) Setting(ctx context.Context, req *passportpb.UserSettingReques
     replyV, _ := cli.Verify(ctx, reqVerify)
 }    
 ```
+  
+**Jaeger UI 最终效果** 
+
+![opentracing-gin-grpc.jpg](https://github.com/tobeabme/blog/blob/master/images/opentracing-gin-grpc.jpg)	
