@@ -45,6 +45,54 @@ Query is a service that retrieves traces from storage and hosts a UI to display 
 
 Ingester is a service that reads from Kafka topic and writes to another storage backend (Cassandra, Elasticsearch).
 
+## 微服务框架接入opentracing流程
+
+一个微服务框架包括两个部分，http(gin)&grpc两部分，对外提供rest，对内提供grpc服务。下面是微服务框架接入opentracing的大概流程。
+
+**为每个http请求创建一个tracer** 
+
+```
+tracer, closer := tracing.Init("hello-world")
+defer closer.Close()
+opentracing.SetGlobalTracer(tracer)
+```
+
+**创建Span，如果http header中有trace和span信息，则从头部获取，否则创建新的。** 
+```
+spanCtx, _ := tracer.Extract(opentracing.HTTPHeaders, opentracing.HTTPHeadersCarrier(r.Header))
+span := tracer.StartSpan("format", ext.RPCServerOption(spanCtx))
+
+defer span.Finish()
+
+// 把span写入context，函数见的内部调用需要传递ctx，或者说span之间需要传递ctx。
+ctx := opentracing.ContextWithSpan(context.Background(), span)
+```
+
+
+**Http/GRPC 服务函数的进程内部** 
+```
+span, _ := opentracing.StartSpanFromContext(ctx, "formatString")
+defer span.Finish()
+
+
+// 跨进程调用，如调用一个rest api，则需要把span信息注入http header中。
+
+ext.SpanKindRPCClient.Set(span)
+    ext.HTTPUrl.Set(span, url)
+    ext.HTTPMethod.Set(span, "GET")
+    span.Tracer().Inject(
+        span.Context(),
+        opentracing.HTTPHeaders,
+        opentracing.HTTPHeadersCarrier(req.Header),
+)
+
+span.LogFields(
+        log.String("event", "string-format"),
+        log.String("value", helloStr),
+)
+```
+
+
 ## 如何埋点
 
 ### Gin 框架 
