@@ -237,4 +237,12 @@ func (s *Service) Setting(ctx context.Context, req *passportpb.UserSettingReques
   
 **Jaeger UI 最终效果** 
 
-![opentracing-gin-grpc.jpg](https://github.com/tobeabme/blog/blob/master/images/opentracing-gin-grpc.jpg)	
+![opentracing-gin-grpc.jpg](https://github.com/tobeabme/blog/blob/master/images/opentracing-gin-grpc.jpg)
+
+
+## 参考  
+
+[opentracing-tutorial](https://github.com/yurishkuro/opentracing-tutorial)  
+[jaegertracing](https://www.jaegertracing.io/docs/1.12/deployment/)  
+
+
