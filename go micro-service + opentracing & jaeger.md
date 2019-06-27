@@ -110,6 +110,55 @@ func Setting(c *gin.Context) {
 
 ### GRPC
 
+**grpc 客户端SDK**
+
+```
+import "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
+
+...
+
+// Dial grpc server
+func (c *Client) Dial(serviceName string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+	
+	...
+	
+	unaryInterceptor := grpc_middleware.ChainUnaryClient(
+		grpc_opentracing.UnaryClientInterceptor(),
+	)
+
+	c.Dialopts = append(c.Dialopts, grpc.WithUnaryInterceptor(unaryInterceptor))
+
+	conn, err := grpc.Dial(serviceName, c.Dialopts...)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to dial %s: %v", serviceName, err)
+	}
+	return conn, nil
+}
+```
+
+**grpc 服务端SDK**
+
+```
+import "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
+
+...
+
+func NewServer(serviceName, addr string) *Server {
+	var opts []grpc.ServerOption
+	opts = append(opts, grpc_middleware.WithUnaryServerChain(
+		grpc_opentracing.UnaryServerInterceptor(),
+	))
+
+	srv := grpc.NewServer(opts...)
+	return &Server{
+		serviceName: serviceName,
+		addr:        addr,
+		grpcServer:  srv,
+	}
+}
+```
+
+
 **RPC 函数埋点** 
 
 ```
