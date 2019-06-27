@@ -47,5 +47,19 @@ Ingester is a service that reads from Kafka topic and writes to another storage 
 
 ## 如何埋点
 
+**Gin/router 埋点** 
+tracing.NewSpan 参数说明
 
+```
+import ""code.qschou.com/peduli/go_common/tracing""
 
+...
+
+authorized := r.Group("/v1")
+authorized.Use(handlers.TokenCheck, handlers.MustLogin())
+{
+    authorized.GET("/user/:id", handlers.GetUserInfo)
+    authorized.GET("/user", handlers.GetUserInfoByToken)
+    authorized.PUT("/user/:id", tracing.NewSpan("put /user/:id", "handlers.Setting", false), handlers.Setting)
+}
+```
