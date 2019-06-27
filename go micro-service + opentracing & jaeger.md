@@ -47,8 +47,10 @@ Ingester is a service that reads from Kafka topic and writes to another storage 
 
 ## 如何埋点
 
-**Gin/router 埋点** 
-tracing.NewSpan 参数说明
+#### Gin 框架 
+**router 埋点** 
+
+在每个需要追踪请求的http路由方法上，添加「tracing.NewSpan」函数。
 
 ```
 import ""code.qschou.com/peduli/go_common/tracing""
@@ -63,3 +65,11 @@ authorized.Use(handlers.TokenCheck, handlers.MustLogin())
     authorized.PUT("/user/:id", tracing.NewSpan("put /user/:id", "handlers.Setting", false), handlers.Setting)
 }
 ```
+
+参数说明
+
+NewSpan(service string, operationName string, abortOnErrors bool, opts ...opentracing.StartSpanOption) 
+
+service generally fill with the endpoint of api.
+operationName can be filled with HandleFunc's name.
+
