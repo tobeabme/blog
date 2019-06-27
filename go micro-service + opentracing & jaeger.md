@@ -243,8 +243,8 @@ func (s *Service) Setting(ctx context.Context, req *passportpb.UserSettingReques
 ## 参考  
 
 [jaegertracing](https://www.jaegertracing.io/docs/1.12/deployment/)  
-[opentracing-tutorial](https://github.com/yurishkuro/opentracing-tutorial)  
-[grpc-opentracing](https://github.com/grpc-ecosystem/go-grpc-middleware/tree/master/tracing/opentracing)
-[gin-opentracing](https://github.com/gin-contrib/opengintracing/tree/c082d5d9c71fbc49b820f8fd22347d36b89d7d9a)
-[go-opentracing-guides](https://opentracing.io/guides/golang/)
+[opentracing-tutorial](https://github.com/yurishkuro/opentracing-tutorial)   
+[grpc-opentracing](https://github.com/grpc-ecosystem/go-grpc-middleware/tree/master/tracing/opentracing) 
+[gin-opentracing](https://github.com/gin-contrib/opengintracing/tree/c082d5d9c71fbc49b820f8fd22347d36b89d7d9a) 
+[go-opentracing-guides](https://opentracing.io/guides/golang/) 
 
