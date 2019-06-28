@@ -1,10 +1,24 @@
 
-## 背景
-gin+grpc
+## 背景 
+微服务极大地改变了软件的开发和交付模式，单体应用被拆分为多个微服务，单个服务的复杂度大幅降低，库之间的依赖也转变为服务之间的依赖。由此带来的问题是部署的粒度变得越来越细，众多服务给运维带来巨大压力，不过好在我们有 Kubernetes，可以解决大部分运维方面的难题。
 
+随着服务数量的增多和内部调用链的复杂化，仅凭借日志和性能监控很难做到 “See the Whole Picture”，在进行问题排查或是性能分析的时候，无异于盲人摸象。分布式追踪能够帮助开发者直观分析请求链路，快速定位性能瓶颈，逐渐优化服务间依赖，也有助于开发者从更宏观的角度更好地理解整个分布式系统。
 
+分布式追踪系统大体分为三个部分，数据采集、数据持久化、数据展示。数据采集是指在代码中埋点，设置请求中要上报的阶段，以及设置当前记录的阶段隶属于哪个上级阶段。数据持久化则是指将上报的数据落盘存储，例如 Jaeger 就支持多种存储后端，可选用 Cassandra 或者 Elasticsearch。数据展示则是前端根据 Trace ID 查询与之关联的请求阶段，并在界面上呈现。
 
 ## Opentracing
+
+### 发展历史 
+
+早在 2005 年，Google 就在内部部署了一套分布式追踪系统 Dapper，并发表了一篇论文《Dapper, a Large-Scale Distributed Systems Tracing Infrastructure》，阐述了该分布式追踪系统的设计和实现，可以视为分布式追踪领域的鼻祖。随后出现了受此启发的开源实现，如 Zipkin、SourceGraph 开源的 Appdash、Red Hat 的 Hawkular APM、Uber 开源的 Jaeger 等。但各家的分布式追踪方案是互不兼容的，这才诞生了 OpenTracing。OpenTracing 是一个 Library，定义了一套通用的数据上报接口，要求各个分布式追踪系统都来实现这套接口。这样一来，应用程序只需要对接 OpenTracing，而无需关心后端采用的到底什么分布式追踪系统，因此开发者可以无缝切换分布式追踪系统，也使得在通用代码库增加对分布式追踪的支持成为可能。
+
+目前，主流的分布式追踪实现基本都已经支持 OpenTracing，包括 Jaeger、Zipkin、Appdash 等，具体可参考官方文档 《Supported Tracer Implementations》。
+
+
+### 数据模型 
+
+这部分在 OpenTracing 的规范中写的非常清楚，下面只大概翻译一下其中的关键部分，细节可参考原始文档 《The OpenTracing Semantic Specification》。
+
 
 ## jaeger 架构、部署
 Jaeger can be deployed either as all-in-one binary, where all Jaeger backend components run in a single process, or as a scalable distributed system, discussed below. There two main deployment options:
@@ -256,4 +270,3 @@ func (s *Service) Setting(ctx context.Context, req *passportpb.UserSettingReques
 [gin-opentracing](https://github.com/gin-contrib/opengintracing/tree/c082d5d9c71fbc49b820f8fd22347d36b89d7d9a) 
 
 [go-opentracing-guides](https://opentracing.io/guides/golang/) 
-
