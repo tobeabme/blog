@@ -86,15 +86,20 @@ defer span.Finish()
 
 
 // 跨进程调用，如调用一个rest api，则需要把span信息注入http header中。
-
-ext.SpanKindRPCClient.Set(span)
-    ext.HTTPUrl.Set(span, url)
-    ext.HTTPMethod.Set(span, "GET")
-    span.Tracer().Inject(
-        span.Context(),
-        opentracing.HTTPHeaders,
-        opentracing.HTTPHeadersCarrier(req.Header),
-)
+// tracing.InjectToHeaders(ctx, "GET", url, req.Header)
+func InjectToHeaders(ctx context.Context, method string, url string, header http.Header) {
+	span := opentracing.SpanFromContext(ctx)
+	if span != nil {
+		ext.SpanKindRPCClient.Set(span)
+		ext.HTTPUrl.Set(span, url)
+		ext.HTTPMethod.Set(span, "GET")
+		span.Tracer().Inject(
+			span.Context(),
+			opentracing.HTTPHeaders,
+			opentracing.HTTPHeadersCarrier(header),
+		)
+	}
+}
 
 span.LogFields(
         log.String("event", "string-format"),
