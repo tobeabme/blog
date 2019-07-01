@@ -196,6 +196,48 @@ Ingester is a service that reads from Kafka topic and writes to another storage 
 
 ### 部署 
 
+#### Collectors 
+The collectors are stateless and thus many instances of jaeger-collector can be run in parallel. Collectors require almost no configuration, except for the location of Cassandra cluster, via --cassandra.keyspace and --cassandra.servers options, or the location of Elasticsearch cluster, via --es.server-urls, depending on which storage is specified. To see all command line options run
+
+`go run ./cmd/collector/main.go -h`
+
+or, if you don’t have the source code
+
+`docker run -it --rm jaegertracing/jaeger-collector:1.12 -h`
+
+#### Storage Backends 
+Collectors require a persistent storage backend. Cassandra and Elasticsearch are the primary supported storage backends.
+
+The storage type can be passed via SPAN_STORAGE_TYPE environment variable. Valid values are cassandra, elasticsearch, kafka (only as a buffer), grpc-plugin, badger (only with all-in-one) and memory (only with all-in-one). 
+
+#### Elasticsearch
+Supported in Jaeger since 0.6.0 Supported versions: 5.x, 6.x
+
+Elasticsearch does not require initialization other than installing and running Elasticsearch. Once it is running, pass the correct configuration values to the Jaeger collector and query service.
+
+**Configuration** 
+
+Minimal
+
+```
+docker run \
+  -e SPAN_STORAGE_TYPE=elasticsearch \
+  -e ES_SERVER_URLS=<...> \
+  jaegertracing/jaeger-collector:1.12
+```
+
+To view the full list of configuration options, you can run the following command:
+
+
+```
+docker run \
+  -e SPAN_STORAGE_TYPE=elasticsearch \
+  jaegertracing/jaeger-collector:1.12 \
+  --help
+```
+
+[more info](https://www.jaegertracing.io/docs/1.12/deployment/)
+
 
 ## 微服务框架接入opentracing流程
 
