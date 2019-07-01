@@ -6,6 +6,10 @@
 
 分布式追踪系统大体分为三个部分，数据采集、数据持久化、数据展示。数据采集是指在代码中埋点，设置请求中要上报的阶段，以及设置当前记录的阶段隶属于哪个上级阶段。数据持久化则是指将上报的数据落盘存储，例如 Jaeger 就支持多种存储后端，可选用 Cassandra 或者 Elasticsearch。数据展示则是前端根据 Trace ID 查询与之关联的请求阶段，并在界面上呈现。
 
+![Microservice-3.png](https://github.com/tobeabme/blog/blob/master/images/Microservice-3.png)
+
+微服务通讯架构图
+
 ## Opentracing
 
 ### 发展历史 
@@ -243,16 +247,13 @@ docker run \
 
 一个微服务框架包括两个部分，http(gin) & grpc两部分，对外提供rest，对内提供grpc服务。
 
-下面是微服务通讯架构图
 
-![Microservice-3.png](https://github.com/tobeabme/blog/blob/master/images/Microservice-3.png)
-
-下面是微服务软件框架图
+微服务软件框架图:
 
 ![MicroserviceFramework-3.png](https://github.com/tobeabme/blog/blob/master/images/MicroserviceFramework-3.png)
 
 
-下面是微服务框架接入opentracing的大概流程。
+以下是微服务框架接入opentracing的大概流程。
 
 **为每个http请求创建一个tracer** 
 
