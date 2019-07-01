@@ -200,6 +200,45 @@ Ingester is a service that reads from Kafka topic and writes to another storage 
 
 ### 部署 
 
+#### Agent
+Jaeger client libraries expect jaeger-agent process to run locally on each host. 
+
+It can be executed directly on the host or via Docker, as follows:
+
+```
+## make sure to expose only the ports you use in your deployment scenario!
+docker run \
+  --rm \
+  -p6831:6831/udp \
+  -p6832:6832/udp \
+  -p5778:5778/tcp \
+  -p5775:5775/udp \
+  jaegertracing/jaeger-agent:1.12
+```
+
+The agents can connect point to point to a single collector address, which could be load balanced by another infrastructure component (e.g. DNS) across multiple collectors. The agent can also be configured with a static list of collector addresses.
+
+On Docker, a command like the following can be used:
+```
+docker run \
+  --rm \
+  -p5775:5775/udp \
+  -p6831:6831/udp \
+  -p6832:6832/udp \
+  -p5778:5778/tcp \
+  jaegertracing/jaeger-agent:1.12 \
+  --reporter.grpc.host-port=jaeger-collector.jaeger-infra.svc:14250
+```  
+
+When using gRPC, you have several options for load balancing and name resolution:
+
+- Single connection and no load balancing. This is the default if you specify a single host:port. (example: --reporter.grpc.host-port=jaeger-collector.jaeger-infra.svc:14250)
+
+- Static list of hostnames and round-robin load balancing. This is what you get with a comma-separated list of addresses. (example: reporter.grpc.host-port=jaeger-collector1:14250,jaeger-collector2:14250,jaeger-collector3:14250)
+
+- Dynamic DNS resolution and round-robin load balancing. To get this behaviour, prefix the address with dns:/// and gRPC will attempt to resolve the hostname using SRV records (for external load balancing), TXT records (for service configs), and A records. Refer to the gRPC Name Resolution docs and the dns_resolver.go implementation for more info. (example: --reporter.grpc.host-port=dns:///jaeger-collector.jaeger-infra.svc:14250)
+
+
 #### Collectors 
 The collectors are stateless and thus many instances of jaeger-collector can be run in parallel. Collectors require almost no configuration, except for the location of Cassandra cluster, via --cassandra.keyspace and --cassandra.servers options, or the location of Elasticsearch cluster, via --es.server-urls, depending on which storage is specified. To see all command line options run
 
