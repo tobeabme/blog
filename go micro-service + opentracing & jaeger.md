@@ -150,9 +150,8 @@ Baggage拥有强大功能，也会有很大的消耗。由于Baggage的全局传
 SpanContexts可以通过Injected操作向Carrier增加，或者通过Extracted从Carrier中获取，跨进程通讯数据（例如：HTTP头）。通过这种方式，SpanContexts可以跨越进程边界，并提供足够的信息来建立跨进程的span间关系（因此可以实现跨进程连续追踪）。
 
 #### Global and No-op Tracers 
-每一个平台的OpenTracing API库 (例如 opentracing-go, opentracing-java，等等；不包含OpenTracing Tracer接口的实现）必须提供一个no-op Tracer（不具有任何操作的tracer）作为接口的一部分。No-op Tracer的实现必须不会出错，并且不会有任何副作用，包括baggage的传递时，也不会出现任何问题。同样，Tracer的实现也必须提供no-op Span实现；通过这种方法，监控代码不依赖于Tracer关于Span的返回值，针对no-op实现，不需要修改任何源代码。No-op Tracer的Inject方法永远返回成功，Extract返回的效果，和"carrier"中没有找到SpanContext时返回的结果一样。
+每一个平台的OpenTracing API库(opentracing-go, opentracing-java等)，都必须实现一个空的Tracer，No-op Tracer的实现必须不会出错，并且不会有任何副作用。这样在业务方没有指定collector服务、storage、和初始化全局tracer时，但是rpc组件，orm组件或者其他组件加入了探针。这样全局默认是No-op Tracer实例，则对业务不会有任何影响。
 
-每一个平台的OpenTracing API库 可能 支持配置(Go: InitGlobalTracer(), py: opentracing.tracer = myTracer)和获取单例的全局Tracer实例(Go: GlobalTracer(), py: opentracing.tracer)。如果支持全局的Tracer，默认返回的必须是no-op Tracer。
 
 
 ## jaeger 架构、部署
