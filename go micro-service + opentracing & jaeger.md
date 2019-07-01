@@ -70,13 +70,13 @@ ChildOf relationship means that the rootSpan has a logical dependency on the chi
 
 ### Concepts and Terminology, 概念与术语
 
-**Traces** 
+#### Traces 
 一个trace代表一个潜在的，分布式的，存在并行数据或并行执行轨迹（潜在的分布式、并行）的系统。一个trace可以认为是多个span的有向无环图（DAG）。
 
-**Spans** 
+#### Spans 
 一个span代表系统中具有开始时间和执行时长的逻辑运行单元。span之间通过嵌套或者顺序排列建立逻辑因果关系。
 
-**Operation Names** 
+#### Operation Names 
 每一个span都有一个操作名称，这个名称简单，并具有可读性高。（例如：一个RPC方法的名称，一个函数名，或者一个大型计算过程中的子任务或阶段）。span的操作名应该是一个抽象、通用的标识，能够明确的、具有统计意义的名称；更具体的子类型的描述，请使用Tags
 例如，假设一个获取账户信息的span会有如下可能的名称：
 | Operation Name | Guidance |
@@ -85,7 +85,7 @@ ChildOf relationship means that the rootSpan has a logical dependency on the chi
 | `get_account/792` | Too specific |
 | `get_account` | Good, and `account_id=792` would make a nice **`Span` tag** |
 
-### References between Spans
+#### References between Spans
 
 A Span may reference zero or more other **SpanContexts** that are causally related. OpenTracing presently defines two types of references: `ChildOf` and `FollowsFrom`. **Both reference types specifically model direct causal relationships between a child Span and a parent Span.** In the future, OpenTracing may also support reference types for Spans with non-causal relationships (e.g., Spans that are batched together, Spans that are stuck in the same queue, etc).
 
