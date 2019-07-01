@@ -126,6 +126,33 @@ These can all be valid timing diagrams for children that "FollowFrom" a parent.
 ~~~
 
 
+#### Logs
+每个span可以进行多次Logs操作，每一次Logs操作，都需要一个带时间戳的时间名称，以及可选的任意大小的存储结构。
+标准中定义了一些日志（logging）操作的一些常见用例和相关的log事件的键值，可参考Data Conventions Guidelines 数据约定指南。
+
+#### Tags
+每个span可以有多个键值对（key:value）形式的Tags，Tags是没有时间戳的，支持简单的对span进行注解和补充。
+和使用Logs的场景一样，对于应用程序特定场景已知的键值对Tags，tracer可以对他们特别关注一下。更多信息，可参考Data Conventions Guidelines 数据约定指南。
+
+#### SpanContext 
+每个span必须提供方法访问SpanContext。SpanContext代表跨越进程边界，传递到下级span的状态。(例如，包含<trace_id, span_id, sampled>元组)，并用于封装Baggage (关于Baggage的解释，请参考下文)。SpanContext在跨越进程边界，和在追踪图中创建边界的时候会使用。(ChildOf关系或者其他关系，参考Span间关系 )。
+
+#### Baggage 
+Baggage是存储在SpanContext中的一个键值对(SpanContext)集合。它会在一条追踪链路上的所有span内全局传输，包含这些span对应的SpanContexts。在这种情况下，"Baggage"会随着trace一同传播，他因此得名（Baggage可理解为随着trace运行过程传送的行李）。鉴于全栈OpenTracing集成的需要，Baggage通过透明化的传输任意应用程序的数据，实现强大的功能。例如：可以在最终用户的手机端添加一个Baggage元素，并通过分布式追踪系统传递到存储层，然后再通过反向构建调用栈，定位过程中消耗很大的SQL查询语句。
+
+Baggage拥有强大功能，也会有很大的消耗。由于Baggage的全局传输，如果包含的数量量太大，或者元素太多，它将降低系统的吞吐量或增加RPC的延迟。
+
+#### Baggage vs. Span Tags 
+- Baggage在全局范围内，（伴随业务系统的调用）跨进程传输数据。Span的tag不会进行传输，因为他们不会被子级的span继承。
+- span的tag可以用来记录业务相关的数据，并存储于追踪系统中。实现OpenTracing时，可以选择是否存储Baggage中的非业务数据，OpenTracing标准不强制要求实现此特性。
+
+#### Inject and Extract 
+SpanContexts可以通过Injected操作向Carrier增加，或者通过Extracted从Carrier中获取，跨进程通讯数据（例如：HTTP头）。通过这种方式，SpanContexts可以跨越进程边界，并提供足够的信息来建立跨进程的span间关系（因此可以实现跨进程连续追踪）。
+
+#### Global and No-op Tracers 
+每一个平台的OpenTracing API库 (例如 opentracing-go, opentracing-java，等等；不包含OpenTracing Tracer接口的实现）必须提供一个no-op Tracer（不具有任何操作的tracer）作为接口的一部分。No-op Tracer的实现必须不会出错，并且不会有任何副作用，包括baggage的传递时，也不会出现任何问题。同样，Tracer的实现也必须提供no-op Span实现；通过这种方法，监控代码不依赖于Tracer关于Span的返回值，针对no-op实现，不需要修改任何源代码。No-op Tracer的Inject方法永远返回成功，Extract返回的效果，和"carrier"中没有找到SpanContext时返回的结果一样。
+
+每一个平台的OpenTracing API库 可能 支持配置(Go: InitGlobalTracer(), py: opentracing.tracer = myTracer)和获取单例的全局Tracer实例(Go: GlobalTracer(), py: opentracing.tracer)。如果支持全局的Tracer，默认返回的必须是no-op Tracer。
 
 
 ## jaeger 架构、部署
