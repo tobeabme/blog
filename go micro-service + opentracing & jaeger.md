@@ -405,3 +405,5 @@ func (s *Service) Setting(ctx context.Context, req *passportpb.UserSettingReques
 [gin-opentracing](https://github.com/gin-contrib/opengintracing/tree/c082d5d9c71fbc49b820f8fd22347d36b89d7d9a) 
 
 [go-opentracing-guides](https://opentracing.io/guides/golang/) 
+
+[opentracing 文档中文版](https://wu-sheng.gitbooks.io/opentracing-io/content)
