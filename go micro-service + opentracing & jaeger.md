@@ -154,7 +154,9 @@ SpanContexts可以通过Injected操作向Carrier增加，或者通过Extracted�
 
 
 
-## jaeger 架构、部署
+## jaeger 
+
+### 架构
 Jaeger can be deployed either as all-in-one binary, where all Jaeger backend components run in a single process, or as a scalable distributed system, discussed below. There two main deployment options:
 
 Collectors are writing directly to storage.
@@ -191,6 +193,9 @@ Query is a service that retrieves traces from storage and hosts a UI to display 
 **Ingester** 
 
 Ingester is a service that reads from Kafka topic and writes to another storage backend (Cassandra, Elasticsearch).
+
+### 部署 
+
 
 ## 微服务框架接入opentracing流程
 
