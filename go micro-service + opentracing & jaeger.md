@@ -19,6 +19,52 @@
 
 这部分在 OpenTracing 的规范中写的非常清楚，下面只大概翻译一下其中的关键部分，细节可参考原始文档 《The OpenTracing Semantic Specification》。
 
+```
+Causal relationships between Spans in a single Trace
+
+        [Span A]  ←←←(the root span)
+            |
+     +------+------+
+     |             |
+ [Span B]      [Span C] ←←←(Span C is a `ChildOf` Span A)
+     |             |
+ [Span D]      +---+-------+
+               |           |
+           [Span E]    [Span F] >>> [Span G] >>> [Span H]
+                                       ↑
+                                       ↑
+                                       ↑
+                         (Span G `FollowsFrom` Span F)
+```
+
+Trace 是调用链，每个调用链由多个 Span 组成。Span 的单词含义是范围，可以理解为某个处理阶段。Span 和 Span 的关系称为 Reference。上图中，总共有标号为 A-H 的 8 个阶段。
+
+```
+Temporal relationships between Spans in a single Trace
+
+––|–––––––|–––––––|–––––––|–––––––|–––––––|–––––––|–––––––|–> time
+
+ [Span A···················································]
+   [Span B··············································]
+      [Span D··········································]
+    [Span C········································]
+         [Span E·······]        [Span F··] [Span G··] [Span H··]
+
+```
+
+**每个阶段（Span）包含如下状态：** 
+
+- 操作名称
+- 起始时间
+- 结束时间
+- 一组 KV 值，作为阶段的标签（Span Tags）
+- 阶段日志（Span Logs）
+- 阶段上下文（SpanContext），其中包含 Trace ID 和 Span ID
+- 引用关系（References）
+
+阶段（Span）可以有 ChildOf 和 FollowsFrom 两种引用关系。ChildOf 用于表示父子关系，即在某个阶段中发生了另一个阶段，是最常见的阶段关系，典型的场景如调用 RPC 接口、执行 SQL、写数据。FollowsFrom 表示跟随关系，意为在某个阶段之后发生了另一个阶段，用来描述顺序执行关系。
+
+ChildOf relationship means that the rootSpan has a logical dependency on the child span before rootSpan can complete its operation. Another standard reference type in OpenTracing is FollowsFrom, which means the rootSpan is the ancestor in the DAG, but it does not depend on the completion of the child span, for example if the child represents a best-effort, fire-and-forget cache write.
 
 ## jaeger 架构、部署
 Jaeger can be deployed either as all-in-one binary, where all Jaeger backend components run in a single process, or as a scalable distributed system, discussed below. There two main deployment options:
