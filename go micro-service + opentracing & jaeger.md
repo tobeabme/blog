@@ -52,6 +52,8 @@ Temporal relationships between Spans in a single Trace
 
 ```
 
+上图是按照时间顺序呈现的调用链。
+
 **每个阶段（Span）包含如下状态：** 
 
 - 操作名称
