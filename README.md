@@ -4,7 +4,7 @@
 
 [《划分微服务边界的5个特征》](https://github.com/tobeabme/blog/blob/master/划分微服务边界的5个特征.md)
 
-[《Opentracing and Jaeger in a real Go Microservices》](https://github.com/tobeabme/blog/blob/master/Opentracing and Jaeger in a real Go Microservices.md)
+[《Opentracing and Jaeger in a real Go Microservices》](https://github.com/tobeabme/blog/blob/master/Opentracing%20and%20Jaeger%20in%20a%20real%20Go%20Microservices.md)
 
 [《Firebase-FCM服务端开发》](https://github.com/tobeabme/blog/blob/master/Firebase-FCM服务端开发.md)
 
