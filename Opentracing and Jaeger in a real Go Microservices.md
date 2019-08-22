@@ -83,11 +83,12 @@ ChildOf relationship means that the rootSpan has a logical dependency on the chi
 #### Operation Names 
 每一个span都有一个操作名称，这个名称简单，并具有可读性高。（例如：一个RPC方法的名称，一个函数名，或者一个大型计算过程中的子任务或阶段）。span的操作名应该是一个抽象、通用的标识，能够明确的、具有统计意义的名称；更具体的子类型的描述，请使用Tags
 例如，假设一个获取账户信息的span会有如下可能的名称：
-| Operation Name | Guidance |
-|:---------------|:--------|
-| `get` | Too general |
-| `get_account/792` | Too specific |
-| `get_account` | Good, and `account_id=792` would make a nice **`Span` tag** |
+
+| Operation Name | Guidance | 
+|:---------------|:--------| 
+| `get` | Too general | 
+| `get_account/792` | Too specific | 
+| `get_account` | Good, and `account_id=792` would make a nice **`Span` tag** | 
 
 #### References between Spans
 
